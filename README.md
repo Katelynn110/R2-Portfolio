@@ -695,10 +695,133 @@ d + geom_density(aes(fill = sex), alpha = 0.4) +
 
 # Plotly
 ## Line Plots 
+First lets load our required package
 
+```{r}
+
+library(plotly)
+
+```
+
+Letss start with a scatter plot of the orange dataset
+
+```{r}
+Orange <- as.data.frame(Orange)
+
+plot_ly(data = Orange, x = ~age, y = ~circumference)
+
+```
+Now lets add some more info
+
+```{r}
+plot_ly(data = Orange, x = ~age, y = ~circumference,
+        color = ~Tree, size = ~age,
+        text = ~paste("Tree ID:", Tree, "<br>Age:", age, "Circ:", circumference)
+)
+
+```
+Now lets create a random distribution and add it to our dataframe
+
+```{r}
+trace_1 <- rnorm(35, mean = 120, sd = 10)
+new_data <- data.frame(Orange, trace_1)
+
+```
+
+We'll use the random numbers as lines on the graph
+
+```{r}
+plot_ly(data = new_data, x = ~age, y = ~circumference, color = ~Tree, size = ~age,
+        text = ~paste("Tree ID:", Tree, "<br>Age:", age, "<br>Circ:", circumference)) %>%
+  add_trace(y = ~trace_1, mode = 'lines') %>%
+  add_trace(y = ~circumference, mode = 'markers')
+
+
+```
+Now lets create a graph with the option of showing as a scatter or line, and add labels.
+
+```{r}
+
+plot_ly(data = Orange, x = ~age, y = ~circumference,
+        color = ~Tree, size = ~circumference,
+        text = ~paste("Tree ID:", Tree, "<br>Age:", age, "Circ:", circumference)) %>%
+  add_trace(y = ~circumference, mode = 'markers') %>%
+  layout(
+    title = "Plot with switchable trace",
+    updatemenus = list(
+      list(
+        type = "dropdown",
+        y = 0.8,
+        buttons = list(
+          list(method = "restyle",
+               args = list("mode", "markers"),
+               label = "Marker"
+          ),
+          list(method = "restyle",
+               args = list("mode", "lines"),
+               labels = "Lines"
+          )
+        )
+      )
+    )
+  )
+```
 ## Plotly 3D
+First lets load our required packages
 
+```{r}
 
+library(plotly)
+
+```
+
+Now lets create a random 3D matrix
+
+```{r}
+
+d <- data.frame(
+  x <- seq(1,10, by = 0.5),
+  y <- seq(1,10, by = 0.5)
+)
+
+z <- matrix(rnorm(length(d$x) * length(d$y)), nrow = length(d$x), ncol = length(d$y))
+
+```
+
+Now lets plot our 3D data
+
+```{r}
+
+plot_ly(d, x=~x, y = ~y, z = ~z) %>%
+  add_surface()
+
+```
+
+Lets add some more aspects to it, such as at topogrophy
+
+```{r}
+
+plot_ly(d, x = ~x, y = ~y, z = ~z) %>%
+  add_surface(
+    contours = list(
+      z = list(
+        show = TRUE,
+        usecolormap = TRUE,
+        highlightcolor = "FF0000",
+        project = list(z = TRUE)
+      )
+    )
+  )
+```
+
+Now lets lookk at a 3D scatter plot
+
+```{r}
+
+plot_ly(longley, x = ~GNP, y = ~Population, z = ~Employed, marker = list(color = ~GNP)) %>%
+  add_markers()
+
+```
 # Other Graphing Techniques
 ## Error Bars
 First lets load our required libraries
